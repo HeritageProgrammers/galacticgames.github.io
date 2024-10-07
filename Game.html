@@ -1,313 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galactic Glide</title>
+    <meta name="description" content="Explore the Universe of Code with a Cosmic Theme!">
+    <title>Cosmic Code Journey</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
     <style>
+        /* General Styles */
         body {
+            font-family: 'Montserrat', sans-serif;
             margin: 0;
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            background-color: #000;
-            background-image: url('space.png');
+            padding: 0;
+
+            background: url('Images/Spaceship.jpg') no-repeat center center fixed; 
+            
             background-size: cover;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            color: white;
+          
+            position: relative;
+        }
+
+        /* Neon Glow and Header */
+        header {
             text-align: center;
-            filter: blur(0px);
-            transition: filter 0.5s ease-in-out;
+            padding: 20px;
+            background: rgba(7, 4, 4, 0.8);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1;
         }
 
         h1 {
-            color: #FFD700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-            margin-bottom: 10px;
-            transform: scale(1.1); /* Futuristic scaling effect */
-            animation: glow 1.5s infinite alternate; /* Glow animation */
+            font-size: 3em;
+            margin: 0;
+            color: #39ff14; /* Neon Green */
+            text-shadow: 0 0 15px #39ff14, 0 0 30px #39ff14;
+            letter-spacing: 2px;
+            transform: perspective(400px) rotateX(20deg); /* 3D Header Effect */
         }
 
-        canvas {
-            background-image: url('space_background.png');
-            background-size: cover;
-            border: 3px solid #FFD700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            position: relative;
-            z-index: 1;
-            filter: drop-shadow(0 0 10px #00FF00); /* Neon glow effect */
-            perspective: 1000px; /* Perspective for 3D effect */
+        /* Space-Themed Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
         }
 
-        /* Button Styles */
-        .return-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 20px;
-            color: #FFD700;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #FFD700;
+        nav a {
+            color: #00ffff; /* Neon Cyan */
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 15px;
+            border: 1px solid transparent;
             border-radius: 5px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
             transition: all 0.3s ease;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
         }
 
-        .return-button:hover {
-            background: rgba(255, 215, 0, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.8);
+        nav a:hover {
+            border: 1px solid #00ffff;
+            background-color: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            transform: perspective(300px) rotateX(15deg) rotateY(15deg); /* 3D Link Effect */
         }
 
-        .return-button:after {
+        /* Floating Code Blocks with Neon and 3D */
+        .code-block {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3); /* 3D effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+            perspective: 1000px;
+        }
+
+        .code-block:hover {
+            transform: scale(1.3) rotateY(25deg) rotateX(10deg); /* Enhanced 3D hover effect */
+            box-shadow: 0 4px 30px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Neon Footer */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            z-index: 1;
+            color: #ff007f; /* Neon Pink */
+            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f;
+        }
+
+        /* Space-Themed 3D Stars */
+        .stars {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        .stars::before {
             content: '';
             position: absolute;
-            width: 300%;
-            height: 300%;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.5s ease;
-            z-index: 0;
-        }
-
-        .return-button:hover:after {
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        p {
-            font-size: 18px;
-            color: #00FF00;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
-        }
-
-        .glow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .star {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            opacity: 0;
-            animation: twinkle 1.5s infinite;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 70%);
+            filter: blur(2px);
         }
 
         @keyframes twinkle {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* Glow animation for futuristic effect */
-        @keyframes glow {
-            0% {
-                text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-                transform: scale(1);
-            }
-            100% {
-                text-shadow: 0 0 20px rgba(255, 215, 0, 1);
-                transform: scale(1.1);
-            }
-        }
-
-        /* Neon effect for asteroids */
-        .neon {
-            filter: drop-shadow(0 0 5px #00FF00);
-            animation: neon-glow 1.5s infinite alternate;
-        }
-
-        @keyframes neon-glow {
-            from {
-                opacity: 0.5;
-            }
-            to {
+            0%, 100% {
                 opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .code-block {
+                width: 100px;
+                height: 50px;
+                font-size: 0.8em;
             }
         }
     </style>
 </head>
+
 <body>
+    <header>
+        <h1>Cosmic Code Journey</h1>
+        
+            <nav>
+                <a href="Game.html">Galactic Glider</a>
+                <a href="MicroTest.html">Banana Grabber</a>
+                <a href="Pong.html">Gravity Pong</a>
+                <a href="AsteroidShooter.html">Asteroid Shooter</a>
+                <a href="SaveAstronauts.html">Save The Astronauts</a>
+ 
+            </nav>
+            
+       
+    </header>
 
-<h1>Galactic Glide</h1>
-<canvas id="gameCanvas" width="400" height="600"></canvas>
-<p>Press Space to Fly!</p>
-<div class="glow"></div>
+    <!-- Floating Code Blocks -->
+    <div class="code-block" id="html">Galactic Glider</div>
+    <div class="code-block" id="css">Banana Grabber</div>
+    <div class="code-block" id="javascript">Gravity Pong</div>
+    <div class="code-block" id="react">Asteroid Shooter</div>
+    <div class="code-block" id="nodejs">Save The Astronauts</div>
+   
 
-<!-- Return Button -->
-<button class="return-button" onclick="location.href='SpaceIn.html'">Return to Space</button>
+    <!-- Floating 3D Stars for Enhanced Space Effect -->
+    <div class="stars" style="top: 10%; left: 25%; animation-duration: 5s;"></div>
+    <div class="stars" style="top: 20%; left: 55%; animation-duration: 6s;"></div>
+    <div class="stars" style="top: 30%; left: 80%; animation-duration: 4s;"></div>
+    <div class="stars" style="top: 50%; left: 10%; animation-duration: 7s;"></div>
+    <div class="stars" style="top: 70%; left: 60%; animation-duration: 5s;"></div>
+    <div class="stars" style="top: 90%; left: 40%; animation-duration: 6s;"></div>
 
-<script>
-    // Star field creation for special effects
-    function createStars() {
-        const glowContainer = document.querySelector('.glow');
-        for (let i = 0; i < 100; i++) {
-            const star = document.createElement('div');
-            const size = Math.random() * 3 + 1;
-            star.classList.add('star');
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.left = `${Math.random() * 100}vw`;
-            star.style.top = `${Math.random() * 100}vh`;
-            star.style.animationDuration = `${Math.random() * 1 + 1}s`;
-            glowContainer.appendChild(star);
+    <footer>
+        <p>&copy; 2024 Heritage Programmers</p>
+    </footer>
+
+    <script>
+
+
+        
+        
+        const codeBlocks = document.querySelectorAll('.code-block');
+        const velocity = 0.1; // Adjusted velocity for a more noticeable zero-gravity effect
+        const blocks = Array.from(codeBlocks).map(block => ({
+            element: block,
+            dx: (Math.random() < 0.5 ? 1 : -1) * velocity,
+            dy: (Math.random() < 0.5 ? 1 : -1) * velocity,
+            width: 120,
+            height: 60
+        }));
+
+        // Initialize position
+        blocks.forEach(block => {
+            block.element.style.top = Math.random() * (window.innerHeight - block.height) + 'px';
+            block.element.style.left = Math.random() * (window.innerWidth - block.width) + 'px';
+        });
+
+        
+
+        function bounce() {
+            blocks.forEach(block => {
+                block.element.style.top = parseFloat(block.element.style.top) + block.dy + 'px';
+                block.element.style.left = parseFloat(block.element.style.left) + block.dx + 'px';
+
+                if (parseFloat(block.element.style.top) <= 0 || 
+                    parseFloat(block.element.style.top) >= window.innerHeight - block.height) {
+                    block.dy *= -1;
+                }
+                if (parseFloat(block.element.style.left) <= 0 || 
+                    parseFloat(block.element.style.left) >= window.innerWidth - block.width) {
+                    block.dx *= -1;
+                }
+
+                blocks.forEach(otherBlock => {
+                    if (block !== otherBlock && detectCollision(block, otherBlock)) {
+                        block.dx *= -1;
+                        block.dy *= -1;
+                        otherBlock.dx *= -1;
+                        otherBlock.dy *= -1;
+                    }
+                });
+            });
+
+            requestAnimationFrame(bounce);
         }
-    }
 
-    // Call the function to create stars
-    createStars();
+        function detectCollision(block1, block2) {
+            const rect1 = block1.element.getBoundingClientRect();
+            const rect2 = block2.element.getBoundingClientRect();
 
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+            return !(
+                rect1.top > rect2.bottom ||
+                rect1.bottom < rect2.top ||
+                rect1.left > rect2.right ||
+                rect1.right < rect2.left
+            );
+        }
 
-    const WIDTH = 400, HEIGHT = 600;
-    const playerWidth = 50, playerHeight = 50;
-    const gravity = 0.3, thrusterForce = -6;
-    const obstacleSpeed = 5;
-    const asteroidSize = 70;
+        bounce(); // Start bouncing
 
-    let playerX = 50, playerY = HEIGHT / 2, playerVelY = 0;
-    let score = 0, highScore = 0;
-    let gameOver = false;
-    let obstacles = [];
 
-    const spaceshipImage = new Image();
-    spaceshipImage.src = 'spaceship.png';
+const canvas = document.querySelector('.star-canvas');
+const ctx = canvas.getContext('2d');
 
-    const asteroidImage = new Image();
-    asteroidImage.src = 'asteroid.png';
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-    spaceshipImage.onload = function () {
-        asteroidImage.onload = function () {
-            loop();
+// Create stars with random colors
+const stars = [];
+function createStars() {
+    for (let i = 0; i < 75; i++) { // Adjust quantity of stars
+        const size = Math.random() * 2 + 1; // Random size between 1 and 3
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const colorClass = Math.floor(Math.random() * 4);
+        const color = colorClass === 0 ? 'white' : colorClass === 1 ? 'pink' : colorClass === 2 ? 'red' : 'yellow'; // Random color
+        const star = {
+            x,
+            y,
+            size,
+            color,
+            speed: Math.random() * 0.5 + 0.5, // Slower speed for subtle movement
+            z: Math.random() * canvas.width // Z-axis for 3D effect
         };
-    };
+        stars.push(star);
+    }
+}
+createStars();
 
-    spaceshipImage.onerror = asteroidImage.onerror = function () {
-        console.error("Error loading images. Please check the image paths.");
-    };
+function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(star => {
+        const perspective = canvas.width / (canvas.width / 2 + star.z);
+        const sx = star.x * perspective + canvas.width / 2;
+        const sy = star.y * perspective + canvas.height / 2;
 
-    document.addEventListener('keydown', function(e) {
-        if (e.code === 'Space' && !gameOver) {
-            playerVelY = thrusterForce;
-        }
-        if (e.code === 'Space' && gameOver) {
-            restartGame();
+        const size = star.size * perspective; // Adjust size for perspective
+        ctx.beginPath();
+        ctx.arc(sx, sy, size, 0, Math.PI * 2);
+        ctx.fillStyle = star.color;
+        ctx.shadowColor = star.color; // Glow effect
+        ctx.shadowBlur = 10; // Glow radius
+        ctx.fill();
+        star.y += star.speed; // Move stars downward
+        star.z -= 2; // Slower speed towards the viewer for 3D effect
+        if (star.y > canvas.height) {
+            star.y = 0; // Reset star position
+            star.x = Math.random() * canvas.width; // Randomize x position
+            star.z = canvas.width; // Reset z for 3D effect
         }
     });
+    requestAnimationFrame(drawStars);
+}
+drawStars();
 
-    function generateObstacle() {
-        let numAsteroids = Math.random() < 0.5 ? 1 : 2;
-        let asteroids = [];
-        let availableSpace = HEIGHT - asteroidSize * numAsteroids;
-        let positions = Array(numAsteroids).fill(0).map(() => Math.floor(Math.random() * availableSpace));
 
-        positions.sort((a, b) => a - b);
-        for (let i = 0; i < numAsteroids; i++) {
-            let y_pos = positions[i] + i * asteroidSize;
-            asteroids.push({x: WIDTH, y: y_pos, size: asteroidSize});
-        }
-        return asteroids;
-    }
 
-    function restartGame() {
-        playerY = HEIGHT / 2;
-        playerVelY = 0;
-        obstacles = [];
-        score = 0;
-        gameOver = false;
-        loop();
-    }
 
-    function checkCollision(player, asteroid) {
-        return (
-            player.x < asteroid.x + asteroid.size &&
-            player.x + playerWidth > asteroid.x &&
-            player.y < asteroid.y + asteroid.size &&
-            player.y + playerHeight > asteroid.y
-        );
-    }
-
-    function loop() {
-        ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-        ctx.drawImage(spaceshipImage, playerX, playerY, playerWidth, playerHeight);
-
-        playerVelY += gravity;
-        playerY += playerVelY;
-
-        if (playerY <= 0 || playerY + playerHeight >= HEIGHT) {
-            gameOver = true;
-        }
-
-        for (let i = obstacles.length - 1; i >= 0; i--) {
-            let asteroidGroup = obstacles[i];
-            for (let j = asteroidGroup.length - 1; j >= 0; j--) {
-                let asteroid = asteroidGroup[j];
-                asteroid.x -= obstacleSpeed;
-
-                if (checkCollision({x: playerX, y: playerY}, asteroid)) {
-                    gameOver = true;
-                }
-
-                if (asteroid.x + asteroid.size < 0) {
-                    asteroidGroup.splice(j, 1);
-                }
-
-                // Add neon glow effect to asteroids
-                ctx.save();
-                ctx.filter = 'drop-shadow(0 0 5px #00FF00)'; // Neon glow effect
-                ctx.drawImage(asteroidImage, asteroid.x, asteroid.y, asteroid.size, asteroid.size);
-                ctx.restore();
-            }
-
-            if (asteroidGroup.length === 0) {
-                obstacles.splice(i, 1);
-                if (!gameOver) {
-                    score += 1;
-                }
-            }
-        }
-
-        ctx.fillStyle = 'white';
-        ctx.font = '20px Arial';
-        ctx.fillText(`Score: ${score}`, 10, 20);
-        ctx.fillText(`High Score: ${highScore}`, 10, 50);
-
-        if (gameOver) {
-            ctx.fillStyle = 'red';
-            ctx.font = '36px Arial';
-            ctx.fillText('Game Over', WIDTH / 2 - 100, HEIGHT / 2 - 20);
-            ctx.fillStyle = 'blue';
-            ctx.font = '20px Arial';
-            ctx.fillText('Press Space to Restart', WIDTH / 2 - 100, HEIGHT / 2 + 20);
-
-            if (score > highScore) {
-                highScore = score;
-            }
-        } else {
-            if (Math.random() < 0.01) {
-                obstacles.push(generateObstacle());
-            }
-            requestAnimationFrame(loop);
-        }
-    }
-
-    // Start the game
-</script>
-
+    </script>
 </body>
+
 </html>
