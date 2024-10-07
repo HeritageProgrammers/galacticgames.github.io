@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore the Universe of Code with a Cosmic Theme!">
+    <title>Cosmic Code Journey</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+
+            background: url('Images/Spaceship.jpg') no-repeat center center fixed; 
+            
+            background-size: cover;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+          
+            position: relative;
+        }
+
+        /* Neon Glow and Header */
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(7, 4, 4, 0.8);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            color: #39ff14; /* Neon Green */
+            text-shadow: 0 0 15px #39ff14, 0 0 30px #39ff14;
+            letter-spacing: 2px;
+            transform: perspective(400px) rotateX(20deg); /* 3D Header Effect */
+        }
+
+        /* Space-Themed Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: #00ffff; /* Neon Cyan */
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 15px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+        }
+
+        nav a:hover {
+            border: 1px solid #00ffff;
+            background-color: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            transform: perspective(300px) rotateX(15deg) rotateY(15deg); /* 3D Link Effect */
+        }
+
+        /* Floating Code Blocks with Neon and 3D */
+        .code-block {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3); /* 3D effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+            perspective: 1000px;
+        }
+
+        .code-block:hover {
+            transform: scale(1.3) rotateY(25deg) rotateX(10deg); /* Enhanced 3D hover effect */
+            box-shadow: 0 4px 30px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Neon Footer */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            z-index: 1;
+            color: #ff007f; /* Neon Pink */
+            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f;
+        }
+
+        /* Space-Themed 3D Stars */
+        .stars {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        .stars::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 70%);
+            filter: blur(2px);
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .code-block {
+                width: 100px;
+                height: 50px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Cosmic Code Journey</h1>
+        
+            <nav>
+                <a href="Game.html">Galactic Glider</a>
+                <a href="MicroTest.html">Banana Grabber</a>
+                <a href="Pong.html">Gravity Pong</a>
+                <a href="AsteroidShooter.html">Asteroid Shooter</a>
+                <a href="SaveAstronauts.html">Save The Astronauts</a>
+ 
+            </nav>
+            
+       
+    </header>
+
+    <!-- Floating Code Blocks -->
+    <div class="code-block" id="html">Galactic Glider</div>
+    <div class="code-block" id="css">Banana Grabber</div>
+    <div class="code-block" id="javascript">Gravity Pong</div>
+    <div class="code-block" id="react">Asteroid Shooter</div>
+    <div class="code-block" id="nodejs">Save The Astronauts</div>
+   
+
+    <!-- Floating 3D Stars for Enhanced Space Effect -->
+    <div class="stars" style="top: 10%; left: 25%; animation-duration: 5s;"></div>
+    <div class="stars" style="top: 20%; left: 55%; animation-duration: 6s;"></div>
+    <div class="stars" style="top: 30%; left: 80%; animation-duration: 4s;"></div>
+    <div class="stars" style="top: 50%; left: 10%; animation-duration: 7s;"></div>
+    <div class="stars" style="top: 70%; left: 60%; animation-duration: 5s;"></div>
+    <div class="stars" style="top: 90%; left: 40%; animation-duration: 6s;"></div>
+
+    <footer>
+        <p>&copy; 2024 Heritage Programmers</p>
+    </footer>
+
+    <script>
+
+
+        
+        
+        const codeBlocks = document.querySelectorAll('.code-block');
+        const velocity = 0.1; // Adjusted velocity for a more noticeable zero-gravity effect
+        const blocks = Array.from(codeBlocks).map(block => ({
+            element: block,
+            dx: (Math.random() < 0.5 ? 1 : -1) * velocity,
+            dy: (Math.random() < 0.5 ? 1 : -1) * velocity,
+            width: 120,
+            height: 60
+        }));
+
+        // Initialize position
+        blocks.forEach(block => {
+            block.element.style.top = Math.random() * (window.innerHeight - block.height) + 'px';
+            block.element.style.left = Math.random() * (window.innerWidth - block.width) + 'px';
+        });
+
+        
+
+        function bounce() {
+            blocks.forEach(block => {
+                block.element.style.top = parseFloat(block.element.style.top) + block.dy + 'px';
+                block.element.style.left = parseFloat(block.element.style.left) + block.dx + 'px';
+
+                if (parseFloat(block.element.style.top) <= 0 || 
+                    parseFloat(block.element.style.top) >= window.innerHeight - block.height) {
+                    block.dy *= -1;
+                }
+                if (parseFloat(block.element.style.left) <= 0 || 
+                    parseFloat(block.element.style.left) >= window.innerWidth - block.width) {
+                    block.dx *= -1;
+                }
+
+                blocks.forEach(otherBlock => {
+                    if (block !== otherBlock && detectCollision(block, otherBlock)) {
+                        block.dx *= -1;
+                        block.dy *= -1;
+                        otherBlock.dx *= -1;
+                        otherBlock.dy *= -1;
+                    }
+                });
+            });
+
+            requestAnimationFrame(bounce);
+        }
+
+        function detectCollision(block1, block2) {
+            const rect1 = block1.element.getBoundingClientRect();
+            const rect2 = block2.element.getBoundingClientRect();
+
+            return !(
+                rect1.top > rect2.bottom ||
+                rect1.bottom < rect2.top ||
+                rect1.left > rect2.right ||
+                rect1.right < rect2.left
+            );
+        }
+
+        bounce(); // Start bouncing
+
+
+const canvas = document.querySelector('.star-canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Create stars with random colors
+const stars = [];
+function createStars() {
+    for (let i = 0; i < 75; i++) { // Adjust quantity of stars
+        const size = Math.random() * 2 + 1; // Random size between 1 and 3
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const colorClass = Math.floor(Math.random() * 4);
+        const color = colorClass === 0 ? 'white' : colorClass === 1 ? 'pink' : colorClass === 2 ? 'red' : 'yellow'; // Random color
+        const star = {
+            x,
+            y,
+            size,
+            color,
+            speed: Math.random() * 0.5 + 0.5, // Slower speed for subtle movement
+            z: Math.random() * canvas.width // Z-axis for 3D effect
+        };
+        stars.push(star);
+    }
+}
+createStars();
+
+function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(star => {
+        const perspective = canvas.width / (canvas.width / 2 + star.z);
+        const sx = star.x * perspective + canvas.width / 2;
+        const sy = star.y * perspective + canvas.height / 2;
+
+        const size = star.size * perspective; // Adjust size for perspective
+        ctx.beginPath();
+        ctx.arc(sx, sy, size, 0, Math.PI * 2);
+        ctx.fillStyle = star.color;
+        ctx.shadowColor = star.color; // Glow effect
+        ctx.shadowBlur = 10; // Glow radius
+        ctx.fill();
+        star.y += star.speed; // Move stars downward
+        star.z -= 2; // Slower speed towards the viewer for 3D effect
+        if (star.y > canvas.height) {
+            star.y = 0; // Reset star position
+            star.x = Math.random() * canvas.width; // Randomize x position
+            star.z = canvas.width; // Reset z for 3D effect
+        }
+    });
+    requestAnimationFrame(drawStars);
+}
+drawStars();
+
+
+
+
+    </script>
+</body>
+
+</html>

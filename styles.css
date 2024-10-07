@@ -1,0 +1,182 @@
+/* General Styles */
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #0c1f3f, #00aaff);
+    color: #ffffff;
+    overflow: hidden; /* Prevent scrollbars from appearing */
+}
+
+/* Background Styles */
+.background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('https://i.imgur.com/D1IY6E5.png') repeat;
+    animation: move 20s linear infinite;
+    opacity: 0.5; /* Adjust opacity for depth effect */
+    z-index: -1; /* Ensure stars are behind other content */
+}
+
+.stars:nth-child(1) {
+    animation-duration: 15s;
+}
+
+.stars:nth-child(2) {
+    animation-duration: 25s;
+}
+
+.stars:nth-child(3) {
+    animation-duration: 30s;
+}
+
+@keyframes move {
+    0% {
+        transform: translateZ(-1500px) translateY(0) rotateY(0);
+    }
+    100% {
+        transform: translateZ(-1500px) translateY(1000px) rotateY(360deg);
+    }
+}
+
+/* Header Styles */
+.header {
+    text-align: center;
+    padding: 50px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    animation: fadeIn 1s ease-in-out;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    margin: 20px 0;
+}
+
+/* Games Section */
+.games {
+    padding: 30px;
+    text-align: center;
+}
+
+.game-card {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px;
+    display: inline-block;
+    width: 300px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    animation: fall 1s ease forwards; /* Initial fall animation */
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100vh); /* Start above the viewport */
+        opacity: 0; /* Fade out initially */
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1; /* Fade in */
+    }
+}
+
+/* Floating Animation */
+.float {
+    animation: float 1s ease-in-out infinite; /* Continuous floating effect */
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px); /* Move up */
+    }
+    100% {
+        transform: translateY(0); /* Return down */
+    }
+}
+
+.game-card h3 {
+    margin: 10px 0;
+}
+
+/* Hover Effects for Game Cards */
+.game-card:hover {
+    transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Button Styles */
+.view-details {
+    padding: 10px 20px;
+    background: #ffcc00;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    z-index: 1; /* Ensures button appears above the hover effect */
+}
+
+.view-details:hover {
+    background: #e0b800;
+    transform: scale(1.05);
+}
+
+/* Footer Styles */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .game-card {
+        width: 90%;
+    }
+}
+
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: black;
+    overflow: hidden;
+    position: relative; /* Ensure positioning context for absolute elements */
+}
+.spaceship {
+    position: absolute;
+    width: 100px; /* Initial size */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    transition: transform 2s ease, opacity 2s ease; /* Smooth animation */
+}
+.zoom {
+    transform: scale(1.5); /* Adjust scale factor as needed */
+    transition: transform 3s ease-in-out; /* Adjust duration here */
+}

@@ -1,0 +1,120 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+    overflow: hidden; /* Prevent scrolling */
+    perspective: 1000px; /* 3D perspective */
+    animation: spaceBackground 10s infinite linear; /* Background animation */
+}
+
+@keyframes spaceBackground {
+    0% { background-color: #000; }
+    50% { background-color: #111; }
+    100% { background-color: #000; }
+}
+
+canvas {
+    border: 2px solid white;
+    position: relative; /* For stacking with stars and comets */
+    z-index: 2; /* Bring canvas above stars and comets */
+    box-shadow: 0 0 20px #0f0; /* Glow effect around canvas */
+    transform: rotateX(10deg); /* Slight 3D rotation */
+}
+
+button {
+    margin: 5px;
+    padding: 10px;
+    cursor: pointer;
+    background-color: rgba(0, 255, 0, 0.5); /* Neon green background */
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 0 10px green;
+    transition: transform 0.2s, box-shadow 0.2s; /* Animation on hover */
+    color: #fff;
+    font-family: 'Space Mono', monospace; /* Space-themed font */
+    font-size: 16px;
+}
+
+button:hover {
+    transform: scale(1.1) rotateY(10deg); /* Scale and slight rotation on hover */
+    box-shadow: 0 0 20px green; /* Glowing effect on hover */
+}
+
+#menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    z-index: 3; /* Bring menu above canvas */
+    animation: fadeIn 1s; /* Fade-in effect for menu */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#settings {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    color: white;
+    z-index: 3; /* Bring settings above canvas */
+    text-shadow: 0 0 5px #00ff00; /* Glowing text shadow */
+}
+
+#endGameMenu {
+    display: none;
+}
+
+.star {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    z-index: 1; /* Place stars behind canvas */
+    animation: starPulse 2s infinite; /* Pulsating effect for stars */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5), 0 0 20px rgba(255, 0, 0, 0.5); /* Glowing effect */
+}
+
+@keyframes starPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.5) rotateZ(15deg); opacity: 1; }
+}
+
+.comet {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(173, 216, 230, 0.8); /* Light blue glow for comets */
+    border-radius: 50%;
+    z-index: 1; /* Place comets behind canvas */
+    animation: comet-animation 3s linear infinite; /* Animation for comets */
+    box-shadow: 0 0 15px rgba(173, 216, 230, 0.8); /* Glowing effect */
+}
+
+@keyframes comet-animation {
+    0% { transform: translate3d(0, 0, 0); opacity: 1; }
+    100% { transform: translate3d(400px, -400px, -100px); opacity: 0; }
+}
+
+h1, h2 {
+    text-shadow: 0 0 10px #00ff00; /* Glowing effect on text */
+}
+
+/* Additional styles for space theme */
+h1 {
+    font-size: 48px;
+    text-transform: uppercase;
+}
+
+h2 {
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
+/* Space-themed font */
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');

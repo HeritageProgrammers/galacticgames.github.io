@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="SaveAstronauts.css">
+    <title>Space Rescue Mission</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        canvas {
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        // Game Constants
+        const WIDTH = 800;
+        const HEIGHT = 600;
+        const FPS = 60;
+
+        // Images
+        const backgroundImage = new Image();
+        backgroundImage.src = 'Images/space_background.png';
+        const spaceshipImage = new Image();
+        spaceshipImage.src = 'Images/rocket.png';
+        const asteroidImage = new Image();
+        asteroidImage.src = 'Images/asteroid.png';
+        const astronautImage = new Image();
+        astronautImage.src = 'Images/astronaut.png';
+
+        // Colors
+        const WHITE = 'rgba(255, 255, 255, 1)';
+        const RED = 'rgba(255, 0, 0, 1)';
+        const GREEN = 'rgba(0, 255, 0, 1)';
+        const YELLOW = 'rgba(255, 255, 0, 1)';
+        const BLACK = 'rgba(0, 0, 0, 1)';
+
+        // Game State
+        const MAIN_MENU = 0;
+        const PLAYING = 1;
+        const END_GAME = 2;
+        let gameState = MAIN_MENU;
+
+        // Spaceship settings
+        let shipSize = 40;
+        let shipX = WIDTH / 2;
+        let shipY = HEIGHT / 2;
+        let velocityX = 0;
+        let velocityY = 0;
+        let shipSpeed = 0.08;
+        let maxSpeed = 4;
+
+        // Fuel settings
+        let fuel = 100;
+        let fuelConsumptionRate = 0.1; // Base consumption rate
+        let fuelIncreaseRate = 0.02; // Increase rate when moving
+        let moving = false;
+
+        // Score tracking
+        let rescued = 0;
+        const goal = 5; 
+
+        // Flags for game state
+        let outOfFuel = false;
+        let crashed = false;
+
+        // Astronauts and Asteroids
+        let astronautPositions = [];
+        let debrisPositions = [];
+
+        // Button class
+        class Button {
+            constructor(x, y, width, height, color, text, textColor, action) {
+                this.rect = { x, y, width, height };
+                this.color = color;
+                this.text = text;
+                this.textColor = textColor;
+                this.action = action;
+            }
+
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+                ctx.fillStyle = this.textColor;
+                ctx.font = '24px Arial';
+                ctx.fillText(this.text, this.rect.x + 10, this.rect.y + 30);
+            }
+
+            isClicked(pos) {
+                return pos.x >= this.rect.x && pos.x <= this.rect.x + this.rect.width &&
+                       pos.y >= this.rect.y && pos.y <= this.rect.y + this.rect.height;
+            }
+        }
+
+        // Generate astronauts
+        function generateAstronauts(numAstronauts) {
+            let positions = [];
+            while (positions.length < numAstronauts) {
+                const pos = { x: randomInt(50, WIDTH - 50), y: randomInt(50, HEIGHT - 50) };
+                if (positions.every(existing => distance(pos.x, pos.y, existing.x, existing.y) > 30)) {
+                    positions.push(pos);
+                }
+            }
+            return positions;
+        }
+
+        // Generate asteroids
+        function generateAsteroids(numAsteroids) {
+            let positions = [];
+            while (positions.length < numAsteroids) {
+                const pos = { x: randomInt(50, WIDTH - 50), y: randomInt(50, HEIGHT - 50), size: 30 };
+                if (positions.every(existing => distance(pos.x, pos.y, existing.x, existing.y) > 40) &&
+                    astronautPositions.every(astronaut => distance(pos.x, pos.y, astronaut.x, astronaut.y) > 40)) {
+                    positions.push(pos);
+                }
+            }
+            return positions;
+        }
+
+        // Utility Functions
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        function distance(x1, y1, x2, y2) {
+            return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+        }
+
+        // Draw text on canvas
+        function createText(ctx, text, x, y, color) {
+            ctx.fillStyle = color;
+            ctx.font = '32px Arial';
+            ctx.fillText(text, x, y);
+        }
+
+        // Draw spaceship
+        function drawShip(ctx) {
+            ctx.drawImage(spaceshipImage, shipX, shipY, shipSize, shipSize);
+        }
+
+        // Draw astronauts
+        function drawAstronauts(ctx) {
+            astronautPositions.forEach(astronaut => {
+                ctx.drawImage(astronautImage, astronaut.x, astronaut.y, 20, 20);
+            });
+        }
+
+        // Draw asteroids
+        function drawDebris(ctx) {
+            debrisPositions.forEach(debris => {
+                ctx.drawImage(asteroidImage, debris.x, debris.y, 30, 30);
+                ctx.strokeStyle = RED;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(debris.x, debris.y, 30, 30);
+            });
+        }
+
+        // Reset game state
+        function resetGame() {
+            shipX = WIDTH / 2;
+            shipY = HEIGHT / 2;
+            velocityX = 0;
+            velocityY = 0;
+            fuel = 100;
+            rescued = 0;
+            outOfFuel = false;
+            crashed = false;
+            astronautPositions = generateAstronauts(5);
+            debrisPositions = generateAsteroids(5);
+            moving = false; // Reset moving state
+        }
+
+        // Main Menu
+        const easyButton = new Button(WIDTH / 2 - 150, 200, 300, 50, GREEN, "Easy", WHITE, () => {
+            fuelConsumptionRate = 0.1;
+            gameState = PLAYING;
+            resetGame();
+        });
+        const mediumButton = new Button(WIDTH / 2 - 150, 300, 300, 50, YELLOW, "Medium", WHITE, () => {
+            fuelConsumptionRate = 0.2;
+            gameState = PLAYING;
+            resetGame();
+        });
+        const hardButton = new Button(WIDTH / 2 - 150, 400, 300, 50, RED, "Hard", WHITE, () => {
+            fuelConsumptionRate = 0.3;
+            gameState = PLAYING;
+            resetGame();
+        });
+
+        // Game loop
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let running = true;
+
+        function gameLoop() {
+            if (!running) return;
+
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+            switch (gameState) {
+                case MAIN_MENU:
+                    createText(ctx, "Select Difficulty", WIDTH / 2 - 100, 100, WHITE);
+                    easyButton.draw(ctx);
+                    mediumButton.draw(ctx);
+                    hardButton.draw(ctx);
+                    break;
+
+                case PLAYING:
+                    ctx.drawImage(backgroundImage, 0, 0);
+                    if (moving) {
+                        fuel -= fuelConsumptionRate; // Consume fuel only when moving
+                    }
+                    if (fuel <= 0) outOfFuel = true;
+
+                    // Control the spaceship
+                    document.onkeydown = function(event) {
+                        if (event.key === 'ArrowUp') { 
+                            velocityY -= shipSpeed; 
+                            moving = true; // Set moving flag
+                        }
+                        if (event.key === 'ArrowDown') { 
+                            velocityY += shipSpeed; 
+                            moving = true; // Set moving flag
+                        }
+                        if (event.key === 'ArrowLeft') { 
+                            velocityX -= shipSpeed; 
+                            moving = true; // Set moving flag
+                        }
+                        if (event.key === 'ArrowRight') { 
+                            velocityX += shipSpeed; 
+                            moving = true; // Set moving flag
+                        }
+                    };
+
+                    document.onkeyup = function(event) {
+                        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                            moving = false; // Reset moving flag when no keys are pressed
+                        }
+                    };
+
+                    // Update ship position
+                    shipX += velocityX;
+                    shipY += velocityY;
+
+                    // Handle screen wrap
+                    if (shipX < -shipSize) shipX = WIDTH;
+                    if (shipX > WIDTH) shipX = -shipSize;
+                    if (shipY < -shipSize) shipY = HEIGHT;
+                    if (shipY > HEIGHT) shipY = -shipSize;
+
+                    // Check for collisions with astronauts and debris
+                    astronautPositions.forEach((astronaut, index) => {
+                        if (distance(shipX, shipY, astronaut.x, astronaut.y) < shipSize / 2 + 10) {
+                            rescued++;
+                            astronautPositions.splice(index, 1);
+                        }
+                    });
+
+                    debrisPositions.forEach(debris => {
+                        if (distance(shipX, shipY, debris.x, debris.y) < shipSize / 2 + debris.size / 2) {
+                            crashed = true;
+                        }
+                    });
+
+                    if (outOfFuel || crashed || rescued >= goal) {
+                        gameState = END_GAME;
+                    }
+
+                    drawShip(ctx);
+                    drawAstronauts(ctx);
+                    drawDebris(ctx);
+                    createText(ctx, "Fuel: " + Math.floor(fuel), 10, 30, WHITE);
+                    createText(ctx, "Rescued: " + rescued, 10, 60, WHITE);
+                    createText(ctx, "Goal: " + goal, 10, 90, WHITE);
+                    break;
+
+                case END_GAME:
+                    createText(ctx, outOfFuel ? "Out of Fuel!" : crashed ? "Crashed!" : "You Win!", WIDTH / 2 - 100, HEIGHT / 2 - 20, WHITE);
+                    createText(ctx, "Click to Restart", WIDTH / 2 - 100, HEIGHT / 2 + 20, WHITE);
+                    break;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Mouse click event listener
+        canvas.addEventListener('click', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            if (gameState === MAIN_MENU) {
+                if (easyButton.isClicked({ x: mouseX, y: mouseY })) easyButton.action();
+                if (mediumButton.isClicked({ x: mouseX, y: mouseY })) mediumButton.action();
+                if (hardButton.isClicked({ x: mouseX, y: mouseY })) hardButton.action();
+            } else if (gameState === END_GAME) {
+                resetGame();
+                gameState = MAIN_MENU;
+            }
+        });
+
+        // Start the game
+        gameLoop();
+    </script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero-G Reflex</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      background-color: transparent;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    #score, #timer {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 40px; /* Increased font size */
+      z-index: 2;
+      text-shadow: 
+        0 0 5px rgba(255, 255, 255, 0.5),
+        0 0 10px rgba(255, 255, 255, 0.4),
+        0 0 20px rgba(0, 255, 0, 1),
+        0 0 30px rgba(0, 255, 0, 0.7); /* Glowing effect */
+      font-weight: bold; /* Make it bold for a more sophisticated look */
+      transform: perspective(500px) translateZ(20px); /* 3D effect */
+    }
+
+    #timer {
+      left: auto;
+      right: 10px;
+    }
+
+    #playAgain {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px 20px;
+      background-color: rgba(34, 34, 34, 0.8);
+      color: white;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      z-index: 2;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    #playAgain:hover {
+      background-color: rgba(255, 0, 0, 0.8);
+      box-shadow: 0 0 40px rgba(255, 0, 0, 1);
+    }
+
+    @keyframes neon-glow {
+      from {
+        opacity: 0.5;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .neon {
+      filter: drop-shadow(0 0 5px #00FF00); /* Neon green glow */
+      animation: neon-glow 1.5s infinite alternate;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 1.5s infinite;
+      filter: blur(2px);
+    }
+
+    .comet {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: cometAnimation 1s linear infinite;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+      opacity: 0.8;
+    }
+
+    @keyframes cometAnimation {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div id="score">Score: 0</div>
+  <div id="timer">Time: 10</div>
+  <button id="playAgain">Play Again</button>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let score = 0;
+    let gameObjects = [];
+    let gameRunning = true;
+    let timeLeft = 10;
+    let timerInterval;
+
+    // Load asteroid image
+    const asteroidImg = new Image();
+    asteroidImg.src = './asteroid.png'; // Make sure this image is available in your project
+
+    asteroidImg.onload = () => {
+      // After the asteroid image loads, start the game
+      startGame();
+    };
+
+    function startGame() {
+      score = 0;  // Reset score
+      timeLeft = 10;  // Reset time
+      gameObjects = [];  // Reset game objects
+      document.getElementById('score').textContent = `Score: ${score}`;
+      document.getElementById('timer').textContent = `Time: ${timeLeft}`;
+      document.getElementById('playAgain').style.display = 'none';
+
+      for (let i = 0; i < 3; i++) {
+        createGameObject();
+      }
+      createStars();
+      createComets();
+      startTimer();
+      updateGame();
+    }
+
+    class GameObject {
+      constructor(x, y, radius, dy, dx) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.dy = dy; // Falling speed
+        this.dx = dx; // Drifting speed
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y); // Translate to object position
+        
+        // Draw the neon effect with drop shadow
+        ctx.filter = 'drop-shadow(0 0 5px #800080)'; // Purple neon glow
+        ctx.drawImage(asteroidImg, -this.radius, -this.radius, this.radius * 2, this.radius * 2); // Draw the asteroid image
+        
+        ctx.restore();
+      }
+
+      update() {
+        this.y += this.dy; // Flow effect
+        this.x += this.dx; // Drifting effect
+        if (this.y - this.radius > canvas.height) {
+          this.y = -this.radius; // Reset position to the top
+          this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius; // Random x position
+        }
+        this.draw();
+      }
+    }
+
+    function createGameObject() {
+      const radius = 40; // Increase radius for asteroid
+      const x = Math.random() * (canvas.width - radius * 2) + radius;
+      const y = Math.random() * (canvas.height - radius * 2) + radius;
+      const dy = Math.random() * 3 + 2; // Faster falling speed
+      const dx = (Math.random() - 0.5) * 2; // Drifting speed (-1 to 1)
+      gameObjects.push(new GameObject(x, y, radius, dy, dx));
+    }
+
+    function updateGame() {
+      if (!gameRunning) return;
+
+      // Clear the canvas for each frame
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Update and draw game objects
+      gameObjects.forEach(obj => obj.update());
+      requestAnimationFrame(updateGame);
+    }
+
+    function createStars() {
+      const numStars = 200;
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        const size = Math.random() * 3 + 1; // Random size between 1 and 4
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.top = `${Math.random() * window.innerHeight}px`;
+        star.style.left = `${Math.random() * window.innerWidth}px`;
+        star.style.animationDuration = `${Math.random() * 2 + 1}s`; // Random twinkle duration
+        star.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 80%)`; // Random color
+        document.body.appendChild(star);
+      }
+    }
+
+    function createComets() {
+      const numComets = 5; // Number of comets
+      for (let i = 0; i < numComets; i++) {
+        const comet = document.createElement('div');
+        comet.classList.add('comet');
+        comet.style.top = `${Math.random() * window.innerHeight}px`;
+        comet.style.left = `${Math.random() * window.innerWidth}px`;
+        comet.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`; // Random color
+        document.body.appendChild(comet);
+
+        // Animate the comet tail effect
+        comet.style.animationDuration = `${Math.random() * 2 + 1}s`; // Random duration for each comet
+      }
+    }
+
+    function checkCollision(x, y) {
+      gameObjects.forEach((obj, index) => {
+        const dist = Math.hypot(obj.x - x, obj.y - y);
+        if (dist - obj.radius < 1) {
+          score += 1;
+          document.getElementById('score').textContent = `Score: ${score}`;
+          gameObjects.splice(index, 1);
+          createGameObject(); // Create new asteroid
+        }
+      });
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = `Time: ${timeLeft}`;
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      gameRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('playAgain').style.display = 'block';
+      alert('Game Over! Your score is: ' + score);
+    }
+
+    canvas.addEventListener('click', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      checkCollision(x, y);
+    });
+
+    document.getElementById('playAgain').addEventListener('click', () => {
+      startGame(); // Restart the game when the button is clicked
+    });
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>

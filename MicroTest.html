@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactic Microgames</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url('space.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+        }
+        #gameArea {
+            display: none; /* Hide game area initially */
+            text-align: center;
+        }
+        #gameCanvas {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        #timer {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+        #startButton, #restartButton {
+            padding: 15px 30px;
+            font-size: 20px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block; /* Make buttons inline-block */
+            margin: 10px; /* Add margin to avoid overlap */
+        }
+        #dialog {
+            display: none; /* Hide dialog initially */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            color: white;
+            text-align: center;
+        }
+        #restartButton {
+            background-color: #28a745; /* Different color for restart button */
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <h1>Galactic Microgames</h1>
+    <button id="startButton">Start Game</button>
+    <div id="dialog">Catch the banana! You have 7 seconds to score points!</div>
+    <div id="gameArea">
+        <h2 id="timer">7</h2>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+    </div>
+    <button id="restartButton">Try Again</button>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const timerDisplay = document.getElementById('timer');
+        const gameCanvas = document.getElementById('gameCanvas');
+        const ctx = gameCanvas.getContext('2d');
+        const startButton = document.getElementById('startButton');
+        const dialog = document.getElementById('dialog');
+        const restartButton = document.getElementById('restartButton');
+
+        let currentGameIndex = 0;
+        let timer;
+        let gameLoop; // Declare gameLoop variable
+        let bananaCaught = false; // Flag to track if the banana has been caught
+
+        // Banana variables
+        let banana = {
+            x: Math.random() * gameCanvas.width,
+            y: Math.random() * gameCanvas.height,
+            vx: (Math.random() - 0.5) * 2, // Initial velocity in x
+            vy: (Math.random() - 0.5) * 2, // Initial velocity in y
+            img: new Image()
+        };
+        banana.img.src = 'Images/Banana.png'; // Pathway to your banana sprite
+
+        // Load banana image
+        banana.img.onload = () => {
+            console.log("Banana image loaded successfully");
+        };
+        banana.img.onerror = () => {
+            console.error("Failed to load Banana image");
+        };
+
+        // Astronaut variables
+        let astronaut = {
+            x: Math.random() * gameCanvas.width,
+            y: Math.random() * gameCanvas.height,
+            vx: 0, // Initial velocity in x (controlled by user)
+            vy: 0, // Initial velocity in y (controlled by user)
+            img: new Image()
+        };
+        astronaut.img.src = 'Images/astronaut.png'; // Pathway to your astronaut sprite
+
+        // Load astronaut image
+        astronaut.img.onload = () => {
+            console.log("Astronaut image loaded successfully");
+        };
+        astronaut.img.onerror = () => {
+            console.error("Failed to load Astronaut image");
+        };
+
+        // Movement controls for the astronaut
+        const keys = {
+            ArrowUp: false,
+            ArrowDown: false,
+            ArrowLeft: false,
+            ArrowRight: false
+        };
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code in keys) keys[event.code] = true;
+        });
+
+        document.addEventListener('keyup', (event) => {
+            if (event.code in keys) keys[event.code] = false;
+        });
+
+        // Function to show the game area
+        function startGame() {
+            startButton.style.display = 'none'; // Hide start button
+            dialog.style.display = 'block'; // Show the dialog box
+            setTimeout(() => {
+                dialog.style.display = 'none'; // Hide the dialog box after 4 seconds
+                gameArea.style.display = 'block'; // Show the game area
+                currentGameIndex = 0;
+                restartButton.style.display = 'none'; // Hide the restart button
+                nextMiniGame(); // Start the first mini-game
+            }, 4000);
+        }
+
+        // Add event listener to the start button
+        startButton.addEventListener('click', startGame);
+
+        // Next mini-game logic
+        function nextMiniGame() {
+            bananaCaught = false; // Reset the flag for the new mini-game
+            if (currentGameIndex < miniGames.length) {
+                timerDisplay.textContent = 7;
+                startTimer(() => {
+                    if (!bananaCaught) { // Only trigger game over if the banana wasn't caught
+                        clearInterval(gameLoop); // Stop the game loop when time runs out
+                        endGame(); // Call endGame if the banana wasn't caught
+                    } else {
+                        currentGameIndex++; // Move to the next mini-game if caught
+                        nextMiniGame(); // Start the next mini-game
+                    }
+                });
+                miniGames[currentGameIndex].play(); // Call the current mini-game
+            } else {
+                endGame(); // If all games are done
+            }
+        }
+        
+        // End game function
+        function endGame() {
+            gameArea.style.display = 'none'; // Hide the game area
+            restartButton.style.display = 'block'; // Show the restart button
+        }
+
+        // Timer function
+        function startTimer(callback) {
+            let timeLeft = 7;
+            timerDisplay.textContent = timeLeft;
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    callback(); // Move to the next mini-game
+                }
+            }, 1000);
+        }
+
+        // Draw Banana and Astronaut
+        function drawObjects() {
+            // Move banana in zero-gravity
+            banana.x += banana.vx;
+            banana.y += banana.vy;
+
+            // Control astronaut with keys and slow down the movement
+            if (keys.ArrowUp) astronaut.vy = -1; // Slower upward movement
+            else if (keys.ArrowDown) astronaut.vy = 1; // Slower downward movement
+            else astronaut.vy = 0; // Stop movement when key is not pressed
+
+            if (keys.ArrowLeft) astronaut.vx = -1; // Slower leftward movement
+            else if (keys.ArrowRight) astronaut.vx = 1; // Slower rightward movement
+            else astronaut.vx = 0; // Stop movement when key is not pressed
+
+            // Apply movement to astronaut
+            astronaut.x += astronaut.vx;
+            astronaut.y += astronaut.vy;
+
+            // Make banana bounce off walls
+            if (banana.x < 0 || banana.x > gameCanvas.width - 50) {
+                banana.vx = -banana.vx;
+            }
+            if (banana.y < 0 || banana.y > gameCanvas.height - 50) {
+                banana.vy = -banana.vy;
+            }
+
+            // Make astronaut bounce off walls
+            if (astronaut.x < 0) astronaut.x = 0;
+            if (astronaut.x > gameCanvas.width - 50) astronaut.x = gameCanvas.width - 50;
+            if (astronaut.y < 0) astronaut.y = 0;
+            if (astronaut.y > gameCanvas.height - 50) astronaut.y = gameCanvas.height - 50;
+
+            // Collision detection
+            if (astronaut.x < banana.x + 50 &&
+                astronaut.x + 50 > banana.x &&
+                astronaut.y < banana.y + 50 &&
+                astronaut.y + 50 > banana.y) {
+                if (!bananaCaught) { // Show win alert only once
+                    bananaCaught = true; // Set the flag when banana is caught
+                    alert('You caught the banana!'); // Alert for catching banana
+                }
+            }
+
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height); // Clear canvas
+            ctx.drawImage(banana.img, banana.x, banana.y, 50, 50); // Draw banana
+            ctx.drawImage(astronaut.img, astronaut.x, astronaut.y, 50, 50); // Draw astronaut
+        }
+
+        // Mini-games array
+        const miniGames = [
+            {
+                play: function() {
+                    gameLoop = setInterval(drawObjects, 1000 / 30); // 30 FPS
+                }
+            },
+            // Add more mini-games here...
+        ];
+
+        // Add event listener to the restart button
+        restartButton.addEventListener('click', () => {
+            restartButton.style.display = 'none'; // Hide the restart button
+            startGame(); // Restart the game
+        });
+    </script>
+</body>
+</html>
