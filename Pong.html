@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="PongCSS.css">
+
     <title>Gravity Pong</title>
     <style>
         body {
@@ -11,20 +13,27 @@
             align-items: center;
             background-color: #000;
             color: #fff;
+            transition: background-color 0.5s ease; /* Smooth background color transition */
+            overflow: hidden; /* Prevent scrollbars */
         }
         canvas {
             border: 2px solid white;
+            transition: transform 0.2s; /* Canvas scale effect */
+            position: relative; /* To position stars and comets */
+            z-index: 1; /* Make sure canvas is above stars and comets */
         }
         button {
             margin: 5px;
             padding: 10px;
             cursor: pointer;
+            z-index: 2; /* Make sure buttons are above everything */
         }
         #menu {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
+            z-index: 2; /* Ensure menu is above stars */
         }
         #settings {
             position: absolute;
@@ -33,9 +42,38 @@
             transform: translateX(-50%);
             font-size: 18px;
             color: white;
+            z-index: 2; /* Ensure settings are above stars */
         }
         #endGameMenu {
             display: none;
+            z-index: 2; /* Ensure end game menu is above stars */
+        }
+        
+        /* Stars and comets */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: twinkling 1.5s infinite alternate;
+        }
+        .comet {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: cometAnimation 2s linear infinite;
+        }
+
+        @keyframes twinkling {
+            0% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(1.2); opacity: 0.5; }
+        }
+
+        @keyframes cometAnimation {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100vh) translateX(-50vw); }
         }
     </style>
 </head>
@@ -102,6 +140,37 @@
         let botSpeed = 4; // Default speed for hard difficulty
         let reactionTime = 1; // Default reaction time for hard difficulty
 
+        // Initialize stars
+        const numStars = 100;
+        const starContainer = document.createElement('div');
+        document.body.appendChild(starContainer);
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 1; // Size between 1 and 4
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${Math.random() * window.innerHeight}px`;
+            star.style.left = `${Math.random() * window.innerWidth}px`;
+            star.style.animationDuration = `${Math.random() * 1 + 0.5}s`; // Random duration for twinkling
+            starContainer.appendChild(star);
+        }
+
+        // Initialize comets
+        function createComet() {
+            const comet = document.createElement('div');
+            comet.className = 'comet';
+            comet.style.left = `${Math.random() * window.innerWidth}px`;
+            comet.style.top = `${window.innerHeight}px`;
+            comet.style.animationDuration = `${Math.random() * 2 + 1}s`;
+            comet.style.animationDelay = `${Math.random() * 5}s`; // Random delay for staggered appearance
+            document.body.appendChild(comet);
+            setTimeout(() => {
+                comet.remove(); // Remove comet after animation
+            }, 7000);
+        }
+        setInterval(createComet, 2000); // Create a comet every 2 seconds
+
         function startGame(mode) {
             document.getElementById("menu").style.display = "none";
             if (mode === 'single') {
@@ -158,7 +227,6 @@
             if (keys.d) {
                 paddle1Y = Math.min(canvas.height - paddleHeight, paddle1Y + 5); // Move down
             }
-
             // Player 2 controls (Right Pong)
             if (keys.ArrowUp) {
                 paddle2Y = Math.max(0, paddle2Y - 5); // Move up
@@ -167,73 +235,77 @@
                 paddle2Y = Math.min(canvas.height - paddleHeight, paddle2Y + 5); // Move down
             }
 
-            // Bot movement (for single player)
-            if (difficulty !== "Normal" && !keys.a && !keys.d) {
-                if (ballY > paddle2Y + paddleHeight / 2 + reactionTime) {
+            // Bot AI for single player
+            if (difficulty !== "Normal") {
+                const targetY = ballY - paddleHeight / 2;
+                if (paddle2Y < targetY - reactionTime) {
                     paddle2Y += botSpeed; // Move down
-                } else if (ballY < paddle2Y + paddleHeight / 2 - reactionTime) {
+                } else if (paddle2Y > targetY + reactionTime) {
                     paddle2Y -= botSpeed; // Move up
                 }
             }
-            // Keep bot paddle within bounds
-            paddle2Y = Math.max(0, Math.min(canvas.height - paddleHeight, paddle2Y));
         }
 
         function drawPaddles() {
             ctx.fillStyle = "white";
-            ctx.fillRect(0, paddle1Y, paddleWidth, paddleHeight);
-            ctx.fillRect(canvas.width - paddleWidth, paddle2Y, paddleWidth, paddleHeight);
+            ctx.fillRect(0, paddle1Y, paddleWidth, paddleHeight); // Left Paddle
+            ctx.fillRect(canvas.width - paddleWidth, paddle2Y, paddleWidth, paddleHeight); // Right Paddle
         }
 
         function drawBall() {
-            ctx.fillStyle = "red";
+            ctx.fillStyle = "white";
             ctx.beginPath();
             ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
             ctx.fill();
         }
 
         function drawScores() {
-            ctx.fillStyle = "white";
             ctx.font = "20px Arial";
-            ctx.fillText(`Player 1: ${player1Score}`, 50, 30);
-            ctx.fillText(`Player 2: ${player2Score}`, canvas.width - 100, 30);
+            ctx.fillText(`Player 1: ${player1Score}`, 50, 30); // Player 1 Score
+            ctx.fillText(`Player 2: ${player2Score}`, canvas.width - 120, 30); // Player 2 Score
         }
 
         function updateBall() {
             ballX += ballSpeedX;
             ballY += ballSpeedY;
 
-            // Apply gravity
-            ballSpeedY += gravity; // Adjust vertical speed based on gravity
-
-            // Check for collision with paddles
+            // Ball collision with top and bottom walls
             if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
-                ballSpeedY = -ballSpeedY; // Reverse vertical direction
-            }
-            if (ballX - ballRadius < paddleWidth && ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
-                ballSpeedX = -ballSpeedX; // Reverse horizontal direction
-                hitSound.play(); // Play hit sound
-            } else if (ballX + ballRadius > canvas.width - paddleWidth && ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
-                ballSpeedX = -ballSpeedX; // Reverse horizontal direction
-                hitSound.play(); // Play hit sound
+                ballSpeedY = -ballSpeedY;
             }
 
-            // Check for scoring
-            if (ballX < 0) {
+            // Ball collision with paddles
+            if (
+                ballX - ballRadius < paddleWidth && // Left paddle
+                ballY > paddle1Y && 
+                ballY < paddle1Y + paddleHeight
+            ) {
+                ballSpeedX = -ballSpeedX;
+                hitSound.play();
+            }
+            if (
+                ballX + ballRadius > canvas.width - paddleWidth && // Right paddle
+                ballY > paddle2Y &&
+                ballY < paddle2Y + paddleHeight
+            ) {
+                ballSpeedX = -ballSpeedX;
+                hitSound.play();
+            }
+
+            // Scoring
+            if (ballX + ballRadius < 0) {
                 player2Score++;
-                scoreSound.play(); // Play score sound
+                scoreSound.play();
                 resetBall();
-            } else if (ballX > canvas.width) {
+            } else if (ballX - ballRadius > canvas.width) {
                 player1Score++;
-                scoreSound.play(); // Play score sound
+                scoreSound.play();
                 resetBall();
             }
 
-            // Check for end of game
-            if (player1Score >= scoreLimit) {
-                endGame("Player 1 Wins!");
-            } else if (player2Score >= scoreLimit) {
-                endGame("Player 2 Wins!");
+            // Check for game over
+            if (player1Score >= scoreLimit || player2Score >= scoreLimit) {
+                endGame();
             }
         }
 
@@ -244,46 +316,48 @@
             ballSpeedY = 3 * (Math.random() < 0.5 ? 1 : -1);
         }
 
-        function endGame(message) {
-            document.getElementById("endGameMenu").style.display = "block";
-            document.getElementById("menu").style.display = "none";
-            alert(message);
+        function endGame() {
+            clearInterval(gameInterval);
+            document.getElementById("endGameMenu").style.display = "block"; // Show game over menu
         }
 
         function resetGame() {
             player1Score = 0;
             player2Score = 0;
-            document.getElementById("endGameMenu").style.display = "none";
-            document.getElementById("menu").style.display = "flex";
-            canvas.style.display = "none";
-            settingsDisplay.innerHTML = ""; // Clear settings display
-        }
-
-        function updateSettingsDisplay() {
-            settingsDisplay.style.display = "block";
-            settingsDisplay.innerHTML = `Difficulty: ${difficulty}, Score Limit: ${scoreLimit}, Gravity: ${gravity}`;
+            resetBall();
+            document.getElementById("endGameMenu").style.display = "none"; // Hide end game menu
+            document.getElementById("menu").style.display = "block"; // Show main menu
+            settingsDisplay.style.display = "none"; // Hide settings
         }
 
         function changeGravity(newGravity) {
-            gravity = newGravity;
-            updateSettingsDisplay(); // Update settings display with new gravity
+            gravity = newGravity; // Set the new gravity
+            document.body.style.backgroundColor = newGravity === 0.1 ? '#000' : '#222'; // Change background color based on gravity
         }
 
-        document.addEventListener("keydown", (e) => {
-            if (keys.hasOwnProperty(e.key)) {
-                keys[e.key] = true;
+        function updateSettingsDisplay() {
+            settingsDisplay.innerHTML = `Mode: ${difficulty}<br>Score Limit: ${scoreLimit}`;
+            settingsDisplay.style.display = "block";
+        }
+
+        // Keydown event
+        document.addEventListener("keydown", (event) => {
+            if (event.key in keys) {
+                keys[event.key] = true;
             }
         });
 
-        document.addEventListener("keyup", (e) => {
-            if (keys.hasOwnProperty(e.key)) {
-                keys[e.key] = false;
+        // Keyup event
+        document.addEventListener("keyup", (event) => {
+            if (event.key in keys) {
+                keys[event.key] = false;
             }
         });
 
+        // Game Loop
+        let gameInterval;
         function gameLoop() {
-            draw();
-            requestAnimationFrame(gameLoop);
+            gameInterval = setInterval(draw, 1000 / 60); // 60 frames per second
         }
     </script>
 </body>
